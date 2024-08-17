@@ -10,6 +10,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+from Paying import  Ui_Paying
 
 class Ui_Menu_Food(object):
     def setupUi(self, MainWindow):
@@ -451,6 +452,21 @@ class Ui_Menu_Food(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
+        self.btnBag.clicked.connect(self.openPayingUi)
+
+        #send data
+        self.window = QtWidgets.QMainWindow()
+        self.ui = Ui_Paying()
+        self.ui.setupUi(self.window)
+        self.window.show()
+
+#    def pick(self, numberFood):
+
+    def openPayingUi(self):
+        self.payingWindow = QtWidgets.QMainWindow()  # Tạo cửa sổ chính mới cho Ui_Paying
+        self.ui = Ui_Paying()  # Tạo instance của Ui_Paying
+        self.ui.setupUi(self.payingWindow)  # Thiết lập giao diện cho cửa sổ
+        self.payingWindow.show()  # Hiển thị cửa sổ
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
