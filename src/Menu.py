@@ -9,10 +9,19 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QMessageBox
 
-from Paying import  Ui_Paying
+from Paying import Ui_Paying
+
 
 class Ui_Menu_Food(object):
+
+    def __init__(self):
+        self.menu = dict()
+        self.nameFoods = {1: "Bánh Ngọt", 2: "Bánh Falafel", 3: "Cá Hồi", 4: "Súp Gà", 5: "Salad phô mai", 6: "Salad"}
+        self.valueFoods = {1: "40.000", 2: "40.000", 3: "100.000", 4: "60.000", 5: "40.000", 6: "40.000"}
+        self.keys = []
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1221, 757)
@@ -161,7 +170,8 @@ class Ui_Menu_Food(object):
         self.widget.setTabletTracking(False)
         self.widget.setAcceptDrops(False)
         self.widget.setAutoFillBackground(True)
-        self.widget.setInputMethodHints(QtCore.Qt.ImhDialableCharactersOnly|QtCore.Qt.ImhDigitsOnly|QtCore.Qt.ImhEmailCharactersOnly|QtCore.Qt.ImhFormattedNumbersOnly|QtCore.Qt.ImhLatinOnly|QtCore.Qt.ImhLowercaseOnly|QtCore.Qt.ImhUppercaseOnly|QtCore.Qt.ImhUrlCharactersOnly)
+        self.widget.setInputMethodHints(
+            QtCore.Qt.ImhDialableCharactersOnly | QtCore.Qt.ImhDigitsOnly | QtCore.Qt.ImhEmailCharactersOnly | QtCore.Qt.ImhFormattedNumbersOnly | QtCore.Qt.ImhLatinOnly | QtCore.Qt.ImhLowercaseOnly | QtCore.Qt.ImhUppercaseOnly | QtCore.Qt.ImhUrlCharactersOnly)
         self.widget.setObjectName("widget")
         self.btnBack = QtWidgets.QPushButton(self.widget)
         self.btnBack.setGeometry(QtCore.QRect(20, 20, 41, 41))
@@ -189,7 +199,7 @@ class Ui_Menu_Food(object):
         self.imgFood1 = QtWidgets.QLabel(self.widget)
         self.imgFood1.setGeometry(QtCore.QRect(50, 60, 201, 191))
         self.imgFood1.setText("")
-        self.imgFood1.setPixmap(QtGui.QPixmap("../icon/img.png"))
+        self.imgFood1.setPixmap(QtGui.QPixmap("../icon/food1.png"))
         self.imgFood1.setScaledContents(True)
         self.imgFood1.setObjectName("imgFood1")
         self.nameFood1 = QtWidgets.QLabel(self.widget)
@@ -454,19 +464,60 @@ class Ui_Menu_Food(object):
 
         self.btnBag.clicked.connect(self.openPayingUi)
 
-        #send data
+        self.btnFood1.clicked.connect(lambda: self.pickFood(1))
+        self.btnFood2.clicked.connect(lambda: self.pickFood(2))
+        self.btnFood3.clicked.connect(lambda: self.pickFood(3))
+        self.btnFood4.clicked.connect(lambda: self.pickFood(4))
+        self.btnFood5.clicked.connect(lambda: self.pickFood(5))
+        self.btnFood6.clicked.connect(lambda: self.pickFood(6))
+    def pickFood(self, numberFood):
+        self.keys.append(numberFood)
+        if numberFood in self.menu:
+            self.menu[numberFood] += 1
+        else:
+            self.menu[numberFood] = 1
+        print(self.menu)
+
+    def openPayingUi(self):
+        # send data
         self.window = QtWidgets.QMainWindow()
         self.ui = Ui_Paying()
         self.ui.setupUi(self.window)
-        self.window.show()
+        i = 0
+        if len(self.menu) == 0:
+            msg = QMessageBox()
+            msg.setWindowTitle("Thông báo")
+            msg.setText("Bạn chưa chọn món nào hết")
+            msg.setIcon(QMessageBox.Question)
+            x = msg.exec_()
+        else:
+            for key in self.menu.keys():
+                self.imagePath = "D:\\internship\\Project\\Tablet_menu\\UI_TABLET_MENU\\icon\\food" + str(key) + ".png"
+                pixmap = QtGui.QPixmap(self.imagePath)  # Tạo QPixmap từ hình ảnh
+                if i == 0:
+                    print(1)
+                    self.ui.imgFood1.setPixmap(pixmap)
+                    self.ui.imgFood1.setScaledContents(True)
+                    self.ui.nameFood1.setText(self.nameFoods[key])
+                    self.ui.valFood1.setText(self.valueFoods[key])
+                    self.ui.number1.setText("x" + str(self.menu[key]))
+                elif i == 1:
+                    print(2)
+                    self.ui.imgFood2.setPixmap(pixmap)
+                    self.ui.imgFood2.setScaledContents(True)
+                    self.ui.nameFood2.setText(self.nameFoods[key])
+                    self.ui.valFood2.setText(self.valueFoods[key])
+                    self.ui.number2.setText("x" + str(self.menu[key]))
+                elif i == 2:
+                    print(3)
+                    self.ui.imgFood3.setPixmap(pixmap)
+                    self.ui.imgFood3.setScaledContents(True)
+                    self.ui.nameFood3.setText(self.nameFoods[key])
+                    self.ui.valFood3.setText(self.valueFoods[key])
+                    self.ui.number3.setText("x" + str(self.menu[key]))
+                i+=1
+            self.window.show()
 
-#    def pick(self, numberFood):
-
-    def openPayingUi(self):
-        self.payingWindow = QtWidgets.QMainWindow()  # Tạo cửa sổ chính mới cho Ui_Paying
-        self.ui = Ui_Paying()  # Tạo instance của Ui_Paying
-        self.ui.setupUi(self.payingWindow)  # Thiết lập giao diện cho cửa sổ
-        self.payingWindow.show()  # Hiển thị cửa sổ
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
@@ -486,6 +537,7 @@ class Ui_Menu_Food(object):
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_Menu_Food()

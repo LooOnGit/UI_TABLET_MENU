@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import self as self
 # Form implementation generated from reading ui file 'Paying.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.10
@@ -9,10 +9,12 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
+from PyQt5.QtGui import QFont
+#
 from firebase import firebase
 from datetime import datetime
 
+import firebase_admin
 
 class Ui_Paying(object):
     def setupUi(self, MainWindow):
@@ -298,6 +300,9 @@ class Ui_Paying(object):
         self.firebase = firebase.FirebaseApplication('https://restaurant-3755a-default-rtdb.firebaseio.com/', None)
         self.btnShowQR.clicked.connect(self.pushData)
 
+        font = QFont("Arial", 20)  # Phông chữ Arial, kích thước 20
+        self.total.setFont(font)
+
     def setImage(self):
         self.imagePath = "D:\\internship\\Project\\Tablet_menu\\UI_TABLET_MENU\\img\\QRmomo.jpg"
         pixmap = QtGui.QPixmap(self.imagePath)  # Tạo QPixmap từ hình ảnh
@@ -305,16 +310,39 @@ class Ui_Paying(object):
         self.payingQR.setScaledContents(True)  # Kích hoạt chế độ phóng to
 
     def pushData(self):
+        menu = self.nameFood1.text() + ", "+ self.nameFood2.text() + ", " +self.nameFood3.text()
+        val1 = self.valFood1.text()[:2] if self.valFood1.text()[:2] else 0
+        num1 = self.number1.text()[1:] if self.number1.text()[1:] else 0
+        val2 = self.valFood2.text()[:2] if self.valFood2.text()[:2] else 0
+        num2 = self.number2.text()[1:] if self.number2.text()[1:] else 0
+        val3 = self.valFood3.text()[:2] if self.valFood3.text()[:2] else 0
+        num3 = self.number3.text()[1:] if self.number3.text()[1:] else 0
+
+        value = (int(val1) * int(num1) + int(val2) * int(num2) + int(val3) * int(num3)) * 1000
+
+        # Định dạng số với dấu chấm ngăn cách hàng nghìn
+        formatted_number = "Tổng tiền: " + "{:,.0f}".format(value).replace(",", ".") + " đồng"
+
+        # Đặt giá trị đã định dạng vào QLabel
+        self.total.setText(formatted_number)
+
         current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         # Tạo dữ liệu để gửi
-        data = {
-            'Menu': 'Bánh Ngọt',
-            'Pay': '40000'
-        }
+        data = {'Menu': menu, 'Pay': formatted_number}
 
         # Gửi dữ liệu đến Firebase tại đường dẫn /23334/current_time
         result = self.firebase.patch('/restaurants/restaurant2/7412785952949915929/bill/' + current_time, data)
+        # Gửi message tới chat
+        chat_data = {
+            "from_display_name": "admin",
+            "from_id": "None",
+            "message": "Đang tiến hành thanh toán",
+            "timestamp": datetime.utcnow().isoformat()
+        }
+
+        # Dùng phương thức post thay cho reference().push()
+        self.firebase.post('/restaurants/restaurant2/7412785952949915929/chat', chat_data)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate

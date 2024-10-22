@@ -28,7 +28,7 @@ class Ui_Dialog(object):
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
         # Set the QR image
-        self.setQRImage('D:\\internship\\Project\\Tablet_menu\\UI_TABLET_MENU\\img\\ND7686.png')
+        self.setQRImage('D:\\internship\\Project\\Tablet_menu\\UI_TABLET_MENU\\img\\chatQR.jpg')
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
